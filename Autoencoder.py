@@ -106,21 +106,21 @@ history = model.fit(
 # ==========================================
 # Calculate reconstruction error on the training set
 train_predictions = model.predict(X_train_scaled)
-train_mae_loss = np.mean(np.abs(train_predictions - X_train_scaled), axis=1)
+#train_mae_loss = np.mean(np.abs(train_predictions - X_train_scaled), axis=1)
 # 1. Update your training error calculation to use MSE (squaring the differences)
-#train_mse_loss = np.mean(np.square(train_predictions - X_train_scaled), axis=1)
-# Set threshold at the 95th percentile of normal data error
-threshold = np.percentile(train_mae_loss, 85)
+train_mse_loss = np.mean(np.square(train_predictions - X_train_scaled), axis=1)
+# Set threshold at the 85th percentile of normal data error
+threshold = np.percentile(train_mse_loss, 85)
 print(f"\n[INFO] Anomaly decision threshold set at MSE score: {threshold:.4f}")
 
 # ==========================================
 # 6. DETECT ANOMALIES ON TEST TRAFFIC
 # ==========================================
 test_predictions = model.predict(X_test_scaled)
-test_mae_loss = np.mean(np.abs(test_predictions - X_test_scaled), axis=1)
-
+#test_mae_loss = np.mean(np.abs(test_predictions - X_test_scaled), axis=1)
+test_mse_loss = np.mean(np.square(test_predictions - X_test_scaled), axis=1)
 # Flag as anomaly if the reconstruction loss exceeds the threshold
-predicted_anomalies = (test_mae_loss > threshold).astype(int)
+predicted_anomalies = (test_mse_loss > threshold).astype(int)
 
 # Quick evaluation breakdown
 actual_anomalies_detected = np.sum((predicted_anomalies == 1) & (y_test['class_label'].values.flatten() == 1))
